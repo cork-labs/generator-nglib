@@ -1,0 +1,24 @@
+/**
+ * nglib-boilerplate - v0.0.2 - 2014-12-22
+ * http://github.com/cork-labs/nglib-boilerplate
+ *
+ * Copyright (c) 2014 Cork Labs <http://cork-labs.org/>
+ * License: MIT <http://cork-labs.mit-license.org/>
+ */
+/**
+ * less entry point
+ */
+.my-directive {
+  color: #ffcc33;
+}
+.my-module {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/**
+ * some extra raw css
+ */
+strong {
+    color: #ccff33;
+}

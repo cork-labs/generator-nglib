@@ -1,0 +1,52 @@
+{
+  "name": "generator-nglib",
+  "version": "0.0.0",
+  "description": "Generates a project to develop Angular libraries, based on boilerplate-nglib.",
+  "author": {
+    "name": "Cork Labs",
+    "url": "http://cork-labs.org/"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://cork-labs.mit-license.org/"
+    }
+  ],
+  "keywords": [
+    "yeoman-generator",
+    "angular",
+    "grunt",
+    "boilerplate",
+    "boilerplate-nglib",
+    "lib"
+  ],
+  "homepage": "http://github.com/cork-labs/generator-nglib",
+  "bugs": "https://github.com/cork-labs/generator-nglib/issues",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cork-labs/generator-nglib.git"
+  },
+  "main": "app/index.js",
+  "readmeFilename": "README.md",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "files": [
+    "app"
+  ],
+  "dependencies": {
+    "async": "^0.9.0",
+    "chalk": "^0.5.0",
+    "yeoman-generator": "^0.18.0",
+    "yosay": "^0.3.0"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  },
+  "peerDependencies": {
+    "yo": ">=1.0.0"
+  }
+}
