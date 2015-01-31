@@ -7,13 +7,13 @@
 *.swp
 .Spotlight-V100
 .Trashes
-.sass-cache
 Icon
 
-# trashy
+# trash
 npm-debug.log
+.sass-cache
 
-# npm and bower
+# dependencies
 /node_modules/
 /vendor/
 

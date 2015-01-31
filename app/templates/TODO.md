@@ -1,9 +1,5 @@
 # Todo
 
-## general
-- setup.sh - disconnect git, replace nglib-boilerplate with libname
-- yeoman wrapper
-
 ## grunt:
 - image assets
 - build/css

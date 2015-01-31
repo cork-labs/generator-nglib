@@ -10,7 +10,7 @@ to better software architecture through smaller, isolated, testable, stable and 
 Keep in mind that this project is still very much a WIP (see Todo below). Ideas and contributions are welcome, feel free
 to use the issues section or do the usual fork and pull request routine.
 
-# Getting Started
+## Getting Started
 
 ```
 $ sudo npm install -g grunt-cli bower
@@ -19,6 +19,7 @@ $ bower install
 $ ./bootstrap.sh
 $ grunt develop
 ```
+
 ## Quick Guide
 
 Main features:

@@ -7,13 +7,60 @@ var fs = require('fs');
 var path = require('path');
 
 module.exports = yeoman.generators.Base.extend({
+
+  constructor: function () {
+    var generator = this;
+
+    yeoman.generators.Base.apply(this, arguments);
+
+    generator.option('config', {
+      type: String,
+      required: false,
+      desc: 'Seed .yo-rc.json with your data. Ex: --config http://example.com/mylib.yo-rc.json'
+    });
+    generator.option('skip-interactive', {
+      type: Boolean,
+      required: false,
+      desc: 'Skip all prompts and use only config from seeded .yo-rc.json. Requires --config to be set.'
+    });
+    generator.option('tpl', {
+      type: String,
+      required: false,
+      desc: 'Override generator templates. Provide a path "/to/templates" or a Github repository URL. Ex: --tpl git:github.com:user/repo.git'
+    });
+    generator.option('tpl-branch', {
+      type: String,
+      required: false,
+      desc: 'If "--tpl" points to a Github repo, use this branch/tag. Ex: --tpl-branch v1.0.0'
+    });
+    generator.option('tpl-path', {
+      type: String,
+      required: false,
+      desc: 'If "--tpl" points to a Github. repo, read overrides from this path.  Ex: --tpl-path path/to/templates'
+    });
+
+  },
+
   initializing: function () {
     var generator = this;
     var done = this.async();
 
     generator.pkg = require('../package.json');
 
-    function fetchSeed(seed, cb) {
+    function rereadConfig(data) {
+      if ('object' !== typeof data['generator-nglib']) {
+        return;
+      }
+      for (var key in data['generator-nglib']) {
+        generator.config.set(key, data['generator-nglib'][key]);
+      }
+    }
+
+    function fetchConfig(source, cb) {
+
+      if (!source) {
+        return cb();
+      }
 
       var destination = generator.destinationRoot() + '/.yo-rc.json';
 
@@ -22,35 +69,35 @@ module.exports = yeoman.generators.Base.extend({
         process.exit(1);
       }
 
-      if (seed.match('http')) {
-        generator.fetch(seed, generator.destinationRoot(), function (err) {
+      if (source.match('http')) {
+        generator.fetch(source, generator.destinationRoot(), function (err) {
           if (err) {
-            generator.log('Could not download seed! ' + err.red);
+            generator.log('Could not download config! ' + err.red);
             process.exit(1);
           }
-          var source = generator.destinationRoot() + '/' + path.basename(seed);
+          source = generator.destinationRoot() + '/' + path.basename(source);
           fs.renameSync(source, destination);
+          var data = require(destination);
+          rereadConfig(data);
           cb();
         });
       }
-      else if (fs.existsSync(seed)) {
-        fs.createReadStream(seed).pipe(fs.createWriteStream(destination));
+      else if (fs.existsSync(source)) {
+        var data = require(source);
+        var fd = fs.openSync(destination, 'w');
+        fs.writeSync(fd, JSON.stringify(data));
+        rereadConfig(data);
         cb();
       }
       else {
-        generator.log('Seed must be a URL or a local file!'.red);
+        generator.log('Parameter --config must be a URL or a local file!'.red);
         process.exit(1);
       }
     }
 
-    if (generator.options.seed) {
-      fetchSeed(generator.options.seed, function (){
-        done();
-      })
-    }
-    else {
+    fetchConfig(generator.options['config'], function () {
       done();
-    }
+    });
   },
 
   prompting: function () {
@@ -59,22 +106,50 @@ module.exports = yeoman.generators.Base.extend({
 
     generator.data = {};
 
+    function slugify(name) {
+      name = name.replace(/\./g, '-');
+      name = generator._.slugify(name);
+      return name.replace(/-/g, '.');
+    }
+
     var prompts = {
-      'name': {
+      'project.name': {
         type: 'input',
-        message: 'Name of the project?',
+        message: 'Name of the project (human-readable)?',
         getValue: function () {
-          return generator.config.get('name') || generator.appname;
+          return generator.config.get('project.name') || generator.appname;
         }
       },
+      'project.description': {
+        type: 'input',
+        message: 'Project description (single line for docs and pkg managers)?',
+        getValue: function () {
+          return generator.config.get('project.description') || null;
+        }
+      },
+
+      'bower.id': {
+        type: 'input',
+        message: 'Bower package name?',
+        getValue: function () {
+          return generator.config.get('bower.id') || slugify(prompts['project.name'].getValue());
+        }
+      },
+      'npm.id': {
+        type: 'input',
+        message: 'Npm package name?',
+        getValue: function () {
+          return generator.config.get('npm.id') || prompts['bower.id'].getValue();
+        }
+      },
+
       'angular.module': {
         type: 'input',
         message: 'Name of the main AngularJS module?',
         getValue: function () {
-          return generator.config.get('angular.module') || generator._.slugify(prompts['name'].getValue().replace(/\./g, '-'));
+          return generator.config.get('angular.module') || slugify(prompts['project.name'].getValue());
         }
       },
-
       'has.tpl': {
         type: 'confirm',
         message: 'Will the library contain template modules?',
@@ -93,16 +168,6 @@ module.exports = yeoman.generators.Base.extend({
         },
         getValue: function () {
           return 'undefined' !== typeof generator.config.get('has.css') ? !!generator.config.get('has.css') : true;
-        }
-      },
-      'keep.docs': {
-        type: 'confirm',
-        message: 'Preserve boilerplate documentation?',
-        getLabel: function (value) {
-          return !value ? 'docs from scratch' : 'keep the boilerplate docs';
-        },
-        getValue: function () {
-          return 'undefined' !== typeof generator.config.get('keep.docs') ? !!generator.config.get('keep.docs') : true;
         }
       },
 
@@ -133,7 +198,7 @@ module.exports = yeoman.generators.Base.extend({
           return !prompts['use.git'].getValue();
         },
         getValue: function () {
-          return generator.config.get('github.reponame') || generator._.slugify(prompts['name'].getValue().replace(/\./g, '-'));
+          return generator.config.get('github.reponame') || slugify(prompts['project.name'].getValue());
         }
       },
       'repo.url': {
@@ -167,8 +232,15 @@ module.exports = yeoman.generators.Base.extend({
             return generator.config.get('homepage.url') || ['https://github.com/', repoAccount, '/', repoId].join('');
           }
           else {
-            return generator.config.get('homepage.url') ||null;
+            return generator.config.get('homepage.url') || null;
           }
+        }
+      },
+      'docs.url': {
+        type: 'confirm',
+        message: 'Documentation URL?',
+        getValue: function () {
+          return generator.config.get('docs.url') || prompts['homepage.url'].getValue() || null;
         }
       },
       'bugs.url': {
@@ -191,6 +263,13 @@ module.exports = yeoman.generators.Base.extend({
         message: 'license name?',
         getValue: function () {
           return generator.config.get('license.name') || 'MIT';
+        }
+      },
+      'license.file': {
+        type: 'input',
+        message: 'license file?',
+        getValue: function () {
+          return generator.config.get('license.file') || 'LICENSE-MIT';
         }
       },
       'license.url': {
@@ -288,18 +367,23 @@ module.exports = yeoman.generators.Base.extend({
     function interview(review) {
 
       var series = [];
-      series.push(makeAsyncInput('name'));
-      series.push(makeAsyncInput('angular.module'));
+      series.push(makeAsyncInput('project.name'));
+      series.push(makeAsyncInput('project.description'));
 
+      series.push(makeAsyncInput('bower.id'));
+      series.push(makeAsyncInput('npm.id'));
+
+      series.push(makeAsyncInput('angular.module'));
       series.push(makeAsyncInput('has.tpl'));
       series.push(makeAsyncInput('has.css'));
-      series.push(makeAsyncInput('keep.docs'));
 
       series.push(makeAsyncInput('use.git'));
       series.push(makeAsyncInput('github.username'));
       series.push(makeAsyncInput('github.reponame'));
       series.push(makeAsyncInput('repo.url'));
+
       series.push(makeAsyncInput('homepage.url'));
+      series.push(makeAsyncInput('docs.url'));
       series.push(makeAsyncInput('bugs.url'));
 
       series.push(makeAsyncInput('license.name'));
@@ -315,7 +399,7 @@ module.exports = yeoman.generators.Base.extend({
       async.series(series, review);
     }
 
-    function review(done) {
+    function printConfig() {
       var config = generator.config.getAll();
       var label;
       var value;
@@ -336,6 +420,10 @@ module.exports = yeoman.generators.Base.extend({
       }
       generator.log(yosay(chalk.red('nglib:') + ' review settings'));
       generator.log(dump);
+    }
+
+    function review(done) {
+      printConfig();
       var prompt = {
         type: 'confirm',
         name: 'interview',
@@ -354,34 +442,123 @@ module.exports = yeoman.generators.Base.extend({
       });
     }
 
-    review(function () {
-      var value;
-      for (var key in prompts) {
-        value = generator.config.get(key);
-        if ('undefined' === typeof value) {
-          value = prompts[key].getValue();
-          generator.config.set(key, value);
-        }
-        generator.data[key] = value;
-      }
+    if (generator.options['skip-interactive']) {
+      printConfig();
       done();
-    });
+    }
+    else {
+      review(function () {
+        var value;
+        for (var key in prompts) {
+          value = generator.config.get(key);
+          if ('undefined' === typeof value) {
+            value = prompts[key].getValue();
+            generator.config.set(key, value);
+          }
+        }
+        done();
+      });
+    }
   },
 
   writing: {
     app: function () {
       var generator = this;
+      var done = this.async();
 
       generator.log(yosay('Generating...'));
 
-      // this.fs.copy(
-      //   this.templatePath('_package.json'),
-      //   this.destinationPath('package.json')
-      // );
-      // this.fs.copy(
-      //   this.templatePath('_bower.json'),
-      //   this.destinationPath('bower.json')
-      // );
+      var data = {
+        config: generator.config.getAll()
+      };
+
+      function processSource(src, remote, root, subpath, cb) {
+        src.recurse(subpath || '.', function (fullpath, basepath, dirname, filename) {
+          var source;
+          var destination;
+          var matches;
+          if (matches = filename.match(/^_\.(.*)$/)) {
+            source = filename;
+            if (subpath) {
+              source = path.join(subpath, source);
+            }
+            if (dirname) {
+              source = path.join(dirname, source);
+            }
+            if (root) {
+              source = path.join(root, source);
+            }
+            destination = dirname ? path.join(dirname, matches[1]) : matches[1];
+            if (!fs.existsSync(destination)) {
+              remote.template ? remote.template(source, destination, data) : remote.copyTpl(source, destination, data);
+            }
+          }
+          else {
+            source = filename;
+            if (subpath) {
+              source = path.join(subpath, source);
+            }
+            if (dirname) {
+              source = path.join(dirname, source);
+            }
+            if (root) {
+              source = path.join(root, source);
+            }
+            destination = dirname ? path.join(dirname, filename) : filename;
+            if (!fs.existsSync(destination)) {
+              remote.copy(source, destination);
+            }
+          }
+        });
+        cb();
+      }
+
+      function fetchGithubTemplate(username, repo, branch, path, cb) {
+        generator.remote(username, repo, branch, function (err, remote) {
+          cb(remote);
+        });
+      }
+
+      function fetchFromPath(path, cb) {
+        generator.remoteDir(path, function (err, remote) {
+          cb(remote);
+        });
+      }
+
+      function fetchTemplate(tpl, branch, path, cb) {
+        if (tpl) {
+          var matches;
+          if (matches = tpl.match(/^git@github\.com:([^/]+)\/(.+)\.git/)) {
+            branch = branch || 'master';
+            fetchGithubTemplate(matches[1], matches[2], branch, path, function (remote, err) {
+              if (!remote) {
+                generator.log(('Failed to clone from "' + tpl + '" branch "' + branch + '".').red);
+                process.exit(1);
+              }
+              processSource(remote.src, remote, null, path, cb);
+            });
+          }
+          else if (fs.existsSync(tpl)) {
+            fetchFromPath(tpl, function (remote) {
+              processSource(remote.src, remote, null, null, cb);
+            });
+          }
+          else {
+            generator.log('Option --tpl must be a Github repository (git@github.com:account/repo.git) or a local path!'.red);
+            process.exit(1);
+          }
+        }
+        else {
+          cb();
+        }
+      }
+
+      fetchTemplate(generator.options['tpl'], generator.options['tpl-branch'], generator.options['tpl-path'], function () {
+        processSource(generator.src, generator.fs, generator.sourceRoot(), null, function () {
+          done();
+        });
+      });
+
     },
 
     projectfiles: function () {
@@ -397,8 +574,9 @@ module.exports = yeoman.generators.Base.extend({
   },
 
   install: function () {
-    this.installDependencies({
-      skipInstall: this.options['skip-install']
-    });
+    // this.installDependencies({
+    //   skipInstall: this.options['skip-install']
+    // });
   }
+
 });
