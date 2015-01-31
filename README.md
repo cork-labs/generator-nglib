@@ -2,7 +2,7 @@
 
 > [Yeoman](http://yeoman.io) generator. Generates a project to develop Angular libraries, based on [boilerplate-nglib](https://github.com/cork-labs/boilerplate-nglib).
 
-# WIP ;-)
+![Angular](assets/angular.png) ![Yeoman](assets/yeoman.png)
 
 ## Getting Started
 

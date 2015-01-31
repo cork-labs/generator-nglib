@@ -96,7 +96,7 @@ module.exports = yeoman.generators.Base.extend({
     }
 
     fetchConfig(generator.options['config'], function () {
-      done();
+      return done();
     });
   },
 
@@ -214,7 +214,7 @@ module.exports = yeoman.generators.Base.extend({
           if (prompts['use.git'].getValue()) {
             var repoAccount = prompts['github.username'].getValue();
             var repoId = prompts['github.reponame'].getValue();
-            return generator.config.get('repo.url') || ['git://github.com/', repoAccount, '/', repoId, '.git'].join('');
+            return generator.config.get('repo.url') || ['git@github.com:', repoAccount, '/', repoId, '.git'].join('');
           }
           else {
             return generator.config.get('repo.url') || null;
@@ -237,7 +237,7 @@ module.exports = yeoman.generators.Base.extend({
         }
       },
       'docs.url': {
-        type: 'confirm',
+        type: 'input',
         message: 'Documentation URL?',
         getValue: function () {
           return generator.config.get('docs.url') || prompts['homepage.url'].getValue() || null;
@@ -263,13 +263,6 @@ module.exports = yeoman.generators.Base.extend({
         message: 'license name?',
         getValue: function () {
           return generator.config.get('license.name') || 'MIT';
-        }
-      },
-      'license.file': {
-        type: 'input',
-        message: 'license file?',
-        getValue: function () {
-          return generator.config.get('license.file') || 'LICENSE-MIT';
         }
       },
       'license.url': {
@@ -437,14 +430,14 @@ module.exports = yeoman.generators.Base.extend({
           });
         }
         else {
-          done();
+          return done();
         }
       });
     }
 
     if (generator.options['skip-interactive']) {
       printConfig();
-      done();
+      return done();
     }
     else {
       review(function () {
@@ -456,12 +449,13 @@ module.exports = yeoman.generators.Base.extend({
             generator.config.set(key, value);
           }
         }
-        done();
+        return done();
       });
     }
   },
 
   writing: {
+
     app: function () {
       var generator = this;
       var done = this.async();
@@ -555,28 +549,31 @@ module.exports = yeoman.generators.Base.extend({
 
       fetchTemplate(generator.options['tpl'], generator.options['tpl-branch'], generator.options['tpl-path'], function () {
         processSource(generator.src, generator.fs, generator.sourceRoot(), null, function () {
-          done();
+          return done();
         });
       });
 
-    },
-
-    projectfiles: function () {
-      // this.fs.copy(
-      //   this.templatePath('editorconfig'),
-      //   this.destinationPath('.editorconfig')
-      // );
-      // this.fs.copy(
-      //   this.templatePath('jshintrc'),
-      //   this.destinationPath('.jshintrc')
-      // );
     }
   },
 
-  install: function () {
-    // this.installDependencies({
-    //   skipInstall: this.options['skip-install']
-    // });
+  install: {
+
+    deps: function () {
+      var generator = this;
+
+      if (!generator.options['skip-install']) {
+        generator.installDependencies();
+      }
+    },
+
+    git: function () {
+      var generator = this;
+
+      if (!generator.options['skip-install'] && !fs.existsSync('.git')) {
+        generator.spawnCommand('git', ['init']);
+        generator.spawnCommand('git', ['remote','add','origin',generator.config.get('repo.url')]);
+      }
+    }
   }
 
 });
