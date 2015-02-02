@@ -170,6 +170,16 @@ module.exports = yeoman.generators.Base.extend({
           return 'undefined' !== typeof generator.config.get('has.css') ? !!generator.config.get('has.css') : true;
         }
       },
+      'has.docs': {
+        type: 'confirm',
+        message: 'Will library be documented?',
+        getLabel: function (value) {
+          return !value ? 'no docs' : 'documentation generated on build';
+        },
+        getValue: function () {
+          return 'undefined' !== typeof generator.config.get('has.docs') ? !!generator.config.get('has.docs') : true;
+        }
+      },
 
       'use.git': {
         type: 'confirm',
@@ -369,6 +379,7 @@ module.exports = yeoman.generators.Base.extend({
       series.push(makeAsyncInput('angular.module'));
       series.push(makeAsyncInput('has.tpl'));
       series.push(makeAsyncInput('has.css'));
+      series.push(makeAsyncInput('has.docs'));
 
       series.push(makeAsyncInput('use.git'));
       series.push(makeAsyncInput('github.username'));
@@ -466,41 +477,23 @@ module.exports = yeoman.generators.Base.extend({
         config: generator.config.getAll()
       };
 
-      function processSource(src, remote, root, subpath, cb) {
+      function processSource(src, subpath, cb) {
         src.recurse(subpath || '.', function (fullpath, basepath, dirname, filename) {
-          var source;
           var destination;
           var matches;
+          var body;
           if (matches = filename.match(/^_\.(.*)$/)) {
-            source = filename;
-            if (subpath) {
-              source = path.join(subpath, source);
-            }
-            if (dirname) {
-              source = path.join(dirname, source);
-            }
-            if (root) {
-              source = path.join(root, source);
-            }
             destination = dirname ? path.join(dirname, matches[1]) : matches[1];
-            if (!fs.existsSync(destination)) {
-              remote.template ? remote.template(source, destination, data) : remote.copyTpl(source, destination, data);
+            if (!generator.fs.exists(destination)) {
+              body = generator.fs.read(fullpath);
+              body = generator.engine(body, data);
+              generator.fs.write(destination, body);
             }
           }
           else {
-            source = filename;
-            if (subpath) {
-              source = path.join(subpath, source);
-            }
-            if (dirname) {
-              source = path.join(dirname, source);
-            }
-            if (root) {
-              source = path.join(root, source);
-            }
             destination = dirname ? path.join(dirname, filename) : filename;
-            if (!fs.existsSync(destination)) {
-              remote.copy(source, destination);
+            if (!generator.fs.exists(destination)) {
+              generator.fs.copy(fullpath, destination);
             }
           }
         });
@@ -529,12 +522,12 @@ module.exports = yeoman.generators.Base.extend({
                 generator.log(('Failed to clone from "' + tpl + '" branch "' + branch + '".').red);
                 process.exit(1);
               }
-              processSource(remote.src, remote, null, path, cb);
+              processSource(remote.src, path, cb);
             });
           }
           else if (fs.existsSync(tpl)) {
             fetchFromPath(tpl, function (remote) {
-              processSource(remote.src, remote, null, null, cb);
+              processSource(remote.src, null, cb);
             });
           }
           else {
@@ -548,7 +541,7 @@ module.exports = yeoman.generators.Base.extend({
       }
 
       fetchTemplate(generator.options['tpl'], generator.options['tpl-branch'], generator.options['tpl-path'], function () {
-        processSource(generator.src, generator.fs, generator.sourceRoot(), null, function () {
+        processSource(generator.src, null, function () {
           return done();
         });
       });

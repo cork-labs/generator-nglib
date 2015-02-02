@@ -6,6 +6,14 @@ module.exports = function (grunt, data) {
 
     var config = {
 
+        // -- flags
+
+        flags: {
+            tpl: <%= !!config['has.tpl'] %>,
+            css: <%= !!config['has.css'] %>,
+            docs: <%= !!config['has.docs'] %>,
+        },
+
         // -- paths
 
         paths: {
@@ -48,7 +56,7 @@ module.exports = function (grunt, data) {
             // watch: jsbeautifier, jshint, build_js, build_test
             src_js: [
                 // contrived expression to include only .js files because of karma pattern expressions
-                '<%= paths.src %>/**/!(*spec|*.mock).js',
+                '<%%= paths.src %>/**/!(*spec|*.mock).js',
             ],
 
             // unit test specs
@@ -56,20 +64,20 @@ module.exports = function (grunt, data) {
             // - loaded by karma unit tests
             // watch: jsbeautifier, jshint, build_js, build_test
             src_spec: [
-                '<%= paths.src %>/**/*.spec.js'
+                '<%%= paths.src %>/**/*.spec.js'
             ],
 
             // sources for the html2js tasks
             // watch: templates (html2s) and test
             src_tpl: [
-                '<%= paths.src %>/**/*.tpl.html'
+                '<%%= paths.src %>/**/*.tpl.html'
             ],
 
             // sources for the less tasks
             // - copied to the build dir (sourcemaps, can be loaded in the browser)
             // watch: build_less
             src_less: [
-                '<%= paths.src %>/**/*.less'
+                '<%%= paths.src %>/**/*.less'
             ],
 
             // -- vendors
@@ -78,14 +86,14 @@ module.exports = function (grunt, data) {
             // - loaded by karma unit tests
             // watch: build_test, build_vendors
             vendor_js: [
-                '<%= paths.vendor %>/angular/angular.js',
+                '<%%= paths.vendor %>/angular/angular.js',
             ],
 
             // test only dependencies
             // - loaded by karma unit tests
             // watch: build_test
             vendor_test_js: [
-                '<%= paths.vendor %>/angular-mocks/angular-mocks.js'
+                '<%%= paths.vendor %>/angular-mocks/angular-mocks.js'
             ],
 
             // lib dependencies
@@ -95,22 +103,22 @@ module.exports = function (grunt, data) {
 
             // files to load in the browser, during tests
             karma_include: [
-                '<%= files.vendor_js %>',
-                '<%= files.vendor_test_js %>',
-                '<%= files.src_spec %>',
+                '<%%= files.vendor_js %>',
+                '<%%= files.vendor_test_js %>',
+                '<%%= files.src_spec %>',
                 // see vars.karma_build.include and vars.karma_dist.include below
                 // for files loaded only in those targets
             ],
 
             // contrived expression because pattern for karma preprocessors is a single minimatch
-            karma_coverage: '<%= paths.src %>/**/!(*spec|*mock).js',
+            karma_coverage: '<%%= paths.src %>/**/!(*spec|*mock).js',
 
             // -- docs
 
             // watch: docs_build
             docs: [
-                '<%= files.src_js %>',
-                '<%= paths.src %>/**/*.ngdoc',
+                '<%%= files.src_js %>',
+                '<%%= paths.src %>/**/*.ngdoc',
                 'docs/**/*.ngdoc'
             ],
         },
@@ -122,15 +130,15 @@ module.exports = function (grunt, data) {
             // -- meta
 
             // used in the banner below
-            license: '<% if (pkg.licenses) { %><%= pkg.licenses[0].type %> <<%= pkg.licenses[0].url %>><% } %><% if (pkg.license) { %><%= pkg.license %><% }%>',
+            license: '<%% if (pkg.licenses) { %><%%= pkg.licenses[0].type %> <<%%= pkg.licenses[0].url %>><%% } %><%% if (pkg.license) { %><%%= pkg.license %><%% }%>',
 
             // banner included at the top of dist files
             banner: '/**\n' +
-                ' * <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                ' * <%= pkg.homepage %>\n' +
+                ' * <%%= pkg.name %> - v<%%= pkg.version %> - <%%= grunt.template.today("yyyy-mm-dd") %>\n' +
+                ' * <%%= pkg.homepage %>\n' +
                 ' *\n' +
-                ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> <<%= pkg.author.url %>>\n' +
-                ' * License: <%= vars.license %>\n' +
+                ' * Copyright (c) <%%= grunt.template.today("yyyy") %> <%%= pkg.author.name %> <<%%= pkg.author.url %>>\n' +
+                ' * License: <%%= vars.license %>\n' +
                 ' */\n',
 
             // used in the name of the template module (results in "my.module.templates")
@@ -160,16 +168,17 @@ module.exports = function (grunt, data) {
                 examplesScripts: [
                     'vendor/angular/angular.js',
                     'src/lib/my.module/my.module.js',
-                    'src/lib/my.module/my.module-templates.js',
+                    'src/lib/my.module/my.module.templates.js',
                 ],
                 examplesStyles: [
+                    'src/lib/my.module/my.module.css',
                     '//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.css',
                 ],
 
                 // the version selector expects JSON with the existing version and their URLs
                 // [{"version":"0.0.3","url":"http://jarvis.cork-labs.org/nglib-boilerplate/0.0.3"},{"version":"0.0.2","url":"http://jarvis.cork-labs.org/nglib-boilerplate/0.0.2"}]
                 // comment out to disable the version selector
-                versionsEndpoint: '//jarvis.cork-labs.local.org/api/project/<%= pkg.name %>/versions',
+                versionsEndpoint: '//jarvis.cork-labs.local.org/api/project/<%%= pkg.name %>/versions',
 
                 // which section (or page) to open by default
                 startPage: 'guide',
@@ -204,19 +213,21 @@ module.exports = function (grunt, data) {
             // -- build related
 
             // template modules to generate
+            // by default, generates a single one "main" out of ALL the tpl files
             build_templates: {
                 main: {
-                    src: '<%= files.src_tpl %>',
-                    dest: '<%= paths.build %>/src/lib/<%= vars.ngNamespace %>/<%= vars.ngNamespace %>-templates.js',
-                    name: '<%= vars.ngNamespace %>.templates'
+                    src: '<%%= files.src_tpl %>',
+                    dest: '<%%= paths.build %>/src/lib/<%%= vars.ngNamespace %>/<%%= vars.ngNamespace %>.templates.js',
+                    name: '<%%= vars.ngNamespace %>.templates'
                 }
             },
 
             // less entry points
+            // by default, only one target, with entry point "main.less"
             build_less: {
                 main: {
-                    src: '<%= paths.src %>/main.less',
-                    dest: '<%= paths.build %>/src/main.css'
+                    src: '<%%= paths.src %>/less/<%%= vars.ngNamespace %>.less',
+                    dest: '<%%= paths.build %>/src/lib/<%%= vars.ngNamespace %>/<%%= vars.ngNamespace %>.css'
                 }
             },
 
@@ -232,7 +243,7 @@ module.exports = function (grunt, data) {
                 ],
                 // files to load in the browser, during karma:build tests
                 include: [
-                    '<%= files.src_js %>'
+                    '<%%= files.src_js %>'
                     // the template modules (html2js.*.destinations) are appended in grunt/config/build.js
                 ],
             },
@@ -240,11 +251,13 @@ module.exports = function (grunt, data) {
             // -- dist related
 
             // template modules to generate
+            // by default, generates a single one "main" out of ALL the tpl files
+            // generated into tmp/ dir and then concat during "dist_js"
             dist_templates: {
                 main: {
-                    src: '<%= files.src_tpl %>',
-                    dest: '<%= paths.tmp %>/<%= vars.ngNamespace %>/<%= vars.ngNamespace %>-templates.js',
-                    name: '<%= vars.ngNamespace %>.templates'
+                    src: '<%%= files.src_tpl %>',
+                    dest: '<%%= paths.tmp %>/<%%= vars.ngNamespace %>/<%%= vars.ngNamespace %>.templates.js',
+                    name: '<%%= vars.ngNamespace %>.templates'
                 }
             },
 
@@ -252,11 +265,11 @@ module.exports = function (grunt, data) {
             dist_css: {
                 main: {
                     src: [
-                        '<%= paths.src %>/less/<%= vars.ngNamespace %>.less',
-                        '<%= paths.src %>/sass/<%= vars.ngNamespace %>.sass',
-                        '<%= paths.src %>/css/**/*.css'
+                        '<%%= paths.src %>/less/<%%= vars.ngNamespace %>.less',
+                        '<%%= paths.src %>/sass/<%%= vars.ngNamespace %>.sass',
+                        '<%%= paths.src %>/css/**/*.css'
                     ],
-                    dest: '<%= paths.dist %>/<%= pkg.name %>'
+                    dest: '<%%= paths.dist %>/<%%= pkg.name %>'
                 }
             },
 
@@ -264,10 +277,10 @@ module.exports = function (grunt, data) {
             dist_js: {
                 main: {
                     src: [
-                        '<%= vars.dist_templates.main.dest %>',
-                        '<%= files.src_js %>'
+                        '<%%= vars.dist_templates.main.dest %>',
+                        '<%%= files.src_js %>'
                     ],
-                    dest: '<%= paths.dist %>/<%= pkg.name %>'
+                    dest: '<%%= paths.dist %>/<%%= pkg.name %>'
                 }
             },
 
@@ -283,7 +296,7 @@ module.exports = function (grunt, data) {
                 ],
                 // files to load in the browser, during karma:dist tests
                 include: [
-                    '<%= paths.dist %>/**/*.min.js'
+                    '<%%= paths.dist %>/**/*.min.js'
                 ],
             }
         }
