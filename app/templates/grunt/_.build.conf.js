@@ -150,7 +150,7 @@ module.exports = function (grunt, data) {
             docs: {
 
                 // comment out if you don't wan't a logo and a link
-                image: 'docs/assets/cork-labs-320x320.png',
+                image: 'docs/assets/logo.png',
                 imageLink: '#/guide',
 
                 // scripts and stylesheets to load in the documentation app
