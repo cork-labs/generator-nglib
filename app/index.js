@@ -38,6 +38,17 @@ module.exports = yeoman.generators.Base.extend({
       required: false,
       desc: 'If "--tpl" points to a Github. repo, read overrides from this path.  Ex: --tpl-path path/to/templates'
     });
+    generator.option('tpl-refresh', {
+      type: Boolean,
+      required: false,
+      desc: 'Refresh remote cache.'
+    });
+    generator.option('skip-install', {
+      type: Boolean,
+      required: false,
+      desc: 'Skip install steps (bower, npm, git and setup).'
+    });
+
 
   },
 
@@ -503,13 +514,13 @@ module.exports = yeoman.generators.Base.extend({
       function fetchGithubTemplate(username, repo, branch, path, cb) {
         generator.remote(username, repo, branch, function (err, remote) {
           cb(remote);
-        });
+        }, !!generator.options['tpl-refresh']);
       }
 
       function fetchFromPath(path, cb) {
         generator.remoteDir(path, function (err, remote) {
           cb(remote);
-        });
+        }, !!generator.options['no-cache']);
       }
 
       function fetchTemplate(tpl, branch, path, cb) {

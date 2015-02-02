@@ -41,7 +41,7 @@ Run the generator pre-seeding the `.yo-rc.json` file with your own default setti
 You can use a local file.
 
 ```bash
-yo nglib --config ~/yo-nglib.json
+yo nglib --config ~/mylib.json
 ```
 
 Or any URL:
@@ -85,10 +85,36 @@ If you provided a Github URL for `--tpl`, you can source the skeleton/templates 
 yo nglib --tpl git@github.com:account/repo.git --tpl-branch v1.0.1
 ```
 
+### --tpl-refresh
+
+If you provided a Github URL for `--tpl`, providing also this flag purges the remote cache, making sure the generator
+uses the latest code available in the remote.
+
+```bash
+yo nglib --tpl git@github.com:account/repo.git --tpl-refresh
+```
+
+Please consider providing the `--tpl-branch` option instead, always pointing to a new tag of your template.
+
 ### --skip-interactive
 
 If this flag is provided, the generator will not prompt you to costumise the settings. This is useful to automate the
-whole process, providing a `--config` seed to the generator.
+whole process when providing a complete `--config` seed to the generator.
+
+```bash
+yo nglib --config ~/mylib.json --skip-interactive
+```
+
+### --skip-install
+
+If this flag is provided, the generator will skip the installation steps after generating the project:
+- npm install
+- bower install
+- git init
+
+```bash
+yo nglib --skip-install
+```
 
 
 ## [MIT License](LICENSE-MIT)
