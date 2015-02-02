@@ -18,11 +18,6 @@ module.exports = yeoman.generators.Base.extend({
       required: false,
       desc: 'Seed .yo-rc.json with your data. Ex: --config http://example.com/mylib.yo-rc.json'
     });
-    generator.option('skip-interactive', {
-      type: Boolean,
-      required: false,
-      desc: 'Skip all prompts and use only config from seeded .yo-rc.json. Requires --config to be set.'
-    });
     generator.option('tpl', {
       type: String,
       required: false,
@@ -31,22 +26,32 @@ module.exports = yeoman.generators.Base.extend({
     generator.option('tpl-branch', {
       type: String,
       required: false,
-      desc: 'If "--tpl" points to a Github repo, use this branch/tag. Ex: --tpl-branch v1.0.0'
+      desc: 'If "--tpl" points to a Github repo, use this branch/tag. Ex: --tpl-branch v1.0.0',
+      defaults: 'master'
     });
     generator.option('tpl-path', {
       type: String,
       required: false,
-      desc: 'If "--tpl" points to a Github. repo, read overrides from this path.  Ex: --tpl-path path/to/templates'
+      desc: 'If "--tpl" points to a Github. repo, read overrides from this path.  Ex: --tpl-path path/to/templates',
+      defaults: './'
     });
     generator.option('tpl-refresh', {
       type: Boolean,
       required: false,
-      desc: 'Refresh remote cache.'
+      desc: 'Refresh remote cache.',
+      defaults: false
+    });
+    generator.option('skip-interactive', {
+      type: Boolean,
+      required: false,
+      desc: 'Skip all prompts and use only config from seeded .yo-rc.json. Requires --config to be set.',
+      defaults: false
     });
     generator.option('skip-install', {
       type: Boolean,
       required: false,
-      desc: 'Skip install steps (bower, npm, git and setup).'
+      desc: 'Skip install steps (bower, npm, git and setup).',
+      defaults: false
     });
 
 
