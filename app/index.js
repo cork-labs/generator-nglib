@@ -53,8 +53,6 @@ module.exports = yeoman.generators.Base.extend({
       desc: 'Skip install steps (bower, npm, git and setup).',
       defaults: false
     });
-
-
   },
 
   initializing: function () {
@@ -177,11 +175,31 @@ module.exports = yeoman.generators.Base.extend({
           return 'undefined' !== typeof generator.config.get('has.tpl') ? !!generator.config.get('has.tpl') : true;
         }
       },
+      'has.less': {
+        type: 'confirm',
+        message: 'Will the library distribute CSS generated from LESS?',
+        getLabel: function (value) {
+          return !value ? 'no LESS' : 'distribution contains CSS generated from LESS files';
+        },
+        getValue: function () {
+          return 'undefined' !== typeof generator.config.get('has.less') ? !!generator.config.get('has.less') : true;
+        }
+      },
+      'has.sass': {
+        type: 'confirm',
+        message: 'Will the library distribute CSS generated from SASS/SCSS?',
+        getLabel: function (value) {
+          return !value ? 'no sass' : 'distribution contains CSS generated from SASS/SCSS files';
+        },
+        getValue: function () {
+          return 'undefined' !== typeof generator.config.get('has.sass') ? !!generator.config.get('has.sass') : true;
+        }
+      },
       'has.css': {
         type: 'confirm',
-        message: 'Will the library contain CSS?',
+        message: 'Will the library distribute CSS compiled from raw CSS files?',
         getLabel: function (value) {
-          return !value ? 'no css' : 'distribution contains one or more css files';
+          return !value ? 'no css' : 'distribution contains CSS generated from raw CSS files';
         },
         getValue: function () {
           return 'undefined' !== typeof generator.config.get('has.css') ? !!generator.config.get('has.css') : true;
@@ -565,35 +583,69 @@ module.exports = yeoman.generators.Base.extend({
 
     },
 
-    // main: function () {
-    //   var generator = this;
-    //   var done = this.async();
+    main: function () {
+      var generator = this;
+      var done = this.async();
 
-    //   generator.log(yosay('Generating angular module...'));
+      generator.log(yosay('Generating angular module...'));
 
-    //   var data = {
-    //     config: generator.config.getAll()
-    //   };
+      var data = {
+        config: generator.config.getAll()
+      };
 
-    //   function generateModule(moduleName, cb) {
-    //     var source;
-    //     var destination;
+      function writeModuleFile(source, destination) {
+        var body;
 
-    //     source = 'main/src/lib/my.module/my.module.js';
-    //     destination = path.join('src/lib', moduleName, moduleName + '.js');
-    //     if (!generator.fs.exists(destination)) {
-    //       body = generator.fs.read(fullpath);
-    //       body = generator.engine(body, data);
-    //       generator.fs.write(destination, body);
-    //     }
-    //     cb();
-    //   }
+        console.log(source, destination);
 
-    //   generateModule(, function () {
-    //     return done();
-    //   });
+        if (!generator.fs.exists(destination)) {
+          body = generator.engine(generator.read(source), data);
+          generator.fs.write(destination, body);
+        }
+      }
 
-    // }
+      function generateModule(moduleName, cb) {
+        var destination;
+
+        destination = path.join('src/lib', moduleName, moduleName + '.js');
+        writeModuleFile('main/src/lib/my.module/my.module.js', destination);
+
+        destination = path.join('src/lib', moduleName, moduleName + '.spec.js');
+        writeModuleFile('main/src/lib/my.module/my.module.spec.js', destination);
+
+        if (generator.config.get('has.docs')) {
+          destination = path.join('src/lib', moduleName, moduleName + '.ngdoc');
+          writeModuleFile('main/src/lib/my.module/my.module.ngdoc', destination);
+        }
+
+        if (generator.config.get('has.tpl')) {
+          destination = path.join('src/lib', moduleName, 'my.directive.tpl.html');
+          writeModuleFile('main/src/lib/my.module/my.directive.tpl.html', destination);
+        }
+
+        if (generator.config.get('has.css')) {
+          writeModuleFile('main/src/css/extra.css', 'src/css/extra.css');
+        }
+
+        if (generator.config.get('has.less')) {
+          destination = path.join('src/less/', moduleName + '.less');
+          writeModuleFile('main/src/less/my.module.less', destination);
+          writeModuleFile('main/src/less/components/my.directive.less', 'src/less/components/my.directive.less');
+        }
+
+        if (generator.config.get('has.sass')) {
+          destination = path.join('src/sass/', moduleName + '.scss');
+          writeModuleFile('main/src/sass/my.module.scss', destination);
+        }
+
+        cb();
+      }
+
+      generateModule(generator.config.get('angular.module'), function () {
+        return done();
+      });
+
+    }
   },
 
   install: {

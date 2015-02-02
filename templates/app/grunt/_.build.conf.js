@@ -10,7 +10,7 @@ module.exports = function (grunt, data) {
 
         flags: {
             tpl: <%= !!config['has.tpl'] %>,
-            css: <%= !!config['has.css'] %>,
+            css: <%= !!(config['has.css'] || config['has.less'] || config['has.sass'])%>,
             docs: <%= !!config['has.docs'] %>,
         },
 
@@ -174,7 +174,7 @@ module.exports = function (grunt, data) {
                 ],
                 examplesStyles: [
                     '//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.css',
-                    <% if (config['has.css']) { %>
+                    <% if (config['has.css'] || config['has.less'] || config['has.sass']) { %>
                     'src/lib/<%%= vars.ngNamespace %>/<%%= vars.ngNamespace %>.css',
                     <% } %>
                 ],

@@ -1,11 +1,11 @@
-angular.module('my.module', ['my.module.templates'])
+angular.module('<%= config['angular.module'] %>', ['<%= config['angular.module'] %>.templates'])
 
 /**
  * @ngdoc object
- * @name my.module.myServiceProvider
+ * @name <%= config['angular.module'] %>.myServiceProvider
  *
  * @description
- * Allows configuration of the {@link my.module.myService} service.
+ * Allows configuration of the {@link <%= config['angular.module'] %>.myService} service.
  */
 .provider('myService', [
 
@@ -24,10 +24,10 @@ angular.module('my.module', ['my.module.templates'])
         /**
          * @ngdoc function
          * @name configure
-         * @methodOf my.module.myServiceProvider
+         * @methodOf <%= config['angular.module'] %>.myServiceProvider
          *
          * @description
-         * Configures the {@link my.module.myService} service.
+         * Configures the {@link <%= config['angular.module'] %>.myService} service.
          *
          * @param {Object} config Object with configuration options, extends base configuration.
          * - divisor {number}
@@ -38,7 +38,7 @@ angular.module('my.module', ['my.module.templates'])
 
         /**
          * @ngdoc object
-         * @name my.module.myService
+         * @name <%= config['angular.module'] %>.myService
          *
          * @description
          * An example service.
@@ -60,7 +60,7 @@ angular.module('my.module', ['my.module.templates'])
                     /**
                      * @ngdoc function
                      * @name divide
-                     * @methodOf my.module.myService
+                     * @methodOf <%= config['angular.module'] %>.myService
                      *
                      * @description
                      * Divide a number by the configurable *divisor* using the current *rounding* mode.
@@ -97,7 +97,7 @@ angular.module('my.module', ['my.module.templates'])
 
 /**
  * @ngdoc directive
- * @name my.module.directive:myDivision
+ * @name <%= config['angular.module'] %>.directive:myDivision
  *
  * @description
  * An example directive that prints a division.
@@ -132,7 +132,7 @@ angular.module('my.module', ['my.module.templates'])
         }
     </file>
     <file name="script.js">
-        angular.module('exampleApp', ['my.module'])
+        angular.module('exampleApp', ['<%= config['angular.module'] %>'])
         .controller('exampleCtrl', ['$scope', 'myService', function ($scope, myService) {
             $scope.rounding = myService.rounding;
             $scope.dividend = 11;
@@ -151,7 +151,7 @@ angular.module('my.module', ['my.module.templates'])
         return {
             restrict: 'EA',
             replace: true,
-            templateUrl: 'lib/my.module/my.division.tpl.html',
+            templateUrl: 'lib/<%= config['angular.module'] %>/my.directive.tpl.html',
             require: 'ngModel',
             scope: {
                 'ngModel': '='
@@ -166,7 +166,7 @@ angular.module('my.module', ['my.module.templates'])
 
 /**
  * @ngdoc filter
- * @name my.module.filter:myDivide
+ * @name <%= config['angular.module'] %>.filter:myDivide
  *
  * @description
  * An example filter that divides a number using a service (kind of a bad practice because the service is stateful).
@@ -202,7 +202,7 @@ angular.module('my.module', ['my.module.templates'])
         }
     </file>
     <file name="script.js">
-        angular.module('exampleApp', ['my.module'])
+        angular.module('exampleApp', ['<%= config['angular.module'] %>'])
         .controller('exampleCtrl', ['$scope', 'myService', function ($scope, myService) {
             $scope.rounding = myService.rounding;
             $scope.dividend = 11;

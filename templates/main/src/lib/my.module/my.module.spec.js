@@ -1,7 +1,8 @@
-describe('my.module', function () {
+describe('<%= config['angular.module'] %>', function () {
     'use strict';
 
-    beforeEach(module('my.module'));
+    beforeEach(module('<%= config['angular.module'] %>'));<% if (config['has.tpl']) { %>
+    beforeEach(module('<%= config['angular.module'] %>.templates'));<% } %>
 
     describe('myServiceProvider', function () {
 
