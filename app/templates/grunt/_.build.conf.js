@@ -143,7 +143,7 @@ module.exports = function (grunt, data) {
 
             // used in the name of the template module (results in "my.module.templates")
             // as well as filenames of dist files
-            ngNamespace: 'my.module',
+            ngNamespace: '<%= config['angular.module'] %>',
 
             // -- docs related
 
@@ -167,18 +167,22 @@ module.exports = function (grunt, data) {
                 // scripts stylesheets and examples
                 examplesScripts: [
                     'vendor/angular/angular.js',
-                    'src/lib/my.module/my.module.js',
-                    'src/lib/my.module/my.module.templates.js',
+                    'src/lib/<%%= vars.ngNamespace %>/<%%= vars.ngNamespace %>.js',
+                    <% if (config['has.tpl']) { %>
+                    'src/lib/<%%= vars.ngNamespace %>/<%%= vars.ngNamespace %>.templates.js',
+                    <% } %>
                 ],
                 examplesStyles: [
-                    'src/lib/my.module/my.module.css',
                     '//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.css',
+                    <% if (config['has.css']) { %>
+                    'src/lib/<%%= vars.ngNamespace %>/<%%= vars.ngNamespace %>.css',
+                    <% } %>
                 ],
 
                 // the version selector expects JSON with the existing version and their URLs
                 // [{"version":"0.0.3","url":"http://jarvis.cork-labs.org/nglib-boilerplate/0.0.3"},{"version":"0.0.2","url":"http://jarvis.cork-labs.org/nglib-boilerplate/0.0.2"}]
-                // comment out to disable the version selector
-                versionsEndpoint: '//jarvis.cork-labs.local.org/api/project/<%%= pkg.name %>/versions',
+                // uncomment to enable the version selector
+                //versionsEndpoint: '//jarvis.cork-labs.local.org/api/project/<%%= pkg.name %>/versions',
 
                 // which section (or page) to open by default
                 startPage: 'guide',
@@ -204,10 +208,11 @@ module.exports = function (grunt, data) {
                         priority: 3
                     }
                 },
-                analytics: {
-                    account: 'UA-08150815-0',
-                    domainName: 'my-domain.com'
-                },
+                // uncomment to enable Google Analytics
+                // analytics: {
+                //     account: 'UA-08150815-0',
+                //     domainName: 'my-domain.com'
+                // },
             },
 
             // -- build related
