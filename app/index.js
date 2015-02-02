@@ -62,6 +62,7 @@ module.exports = yeoman.generators.Base.extend({
     var done = this.async();
 
     generator.pkg = require('../package.json');
+    generator.sourceRoot(path.join(__dirname, '../templates'));
 
     function rereadConfig(data) {
       if ('object' !== typeof data['generator-nglib']) {
@@ -487,7 +488,7 @@ module.exports = yeoman.generators.Base.extend({
       var generator = this;
       var done = this.async();
 
-      generator.log(yosay('Generating...'));
+      generator.log(yosay('Generating app scaffold...'));
 
       var data = {
         config: generator.config.getAll()
@@ -557,12 +558,42 @@ module.exports = yeoman.generators.Base.extend({
       }
 
       fetchTemplate(generator.options['tpl'], generator.options['tpl-branch'], generator.options['tpl-path'], function () {
-        processSource(generator.src, null, function () {
+        processSource(generator.src, 'app', function () {
           return done();
         });
       });
 
-    }
+    },
+
+    // main: function () {
+    //   var generator = this;
+    //   var done = this.async();
+
+    //   generator.log(yosay('Generating angular module...'));
+
+    //   var data = {
+    //     config: generator.config.getAll()
+    //   };
+
+    //   function generateModule(moduleName, cb) {
+    //     var source;
+    //     var destination;
+
+    //     source = 'main/src/lib/my.module/my.module.js';
+    //     destination = path.join('src/lib', moduleName, moduleName + '.js');
+    //     if (!generator.fs.exists(destination)) {
+    //       body = generator.fs.read(fullpath);
+    //       body = generator.engine(body, data);
+    //       generator.fs.write(destination, body);
+    //     }
+    //     cb();
+    //   }
+
+    //   generateModule(, function () {
+    //     return done();
+    //   });
+
+    // }
   },
 
   install: {

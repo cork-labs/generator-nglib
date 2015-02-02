@@ -1,0 +1,9 @@
+@ngdoc overview
+@name API Reference
+@description
+
+# <%= config['project.name'] %> API Reference
+
+Welcome to the **<%= config['project.name'] %>** API reference.
+
+If you want to know how **<%= config['project.name'] %>** works, checkout the {@link guide/ guide} and the {@link demos/ demos}

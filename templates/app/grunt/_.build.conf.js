@@ -202,7 +202,7 @@ module.exports = function (grunt, data) {
                         priority: 2
                     },
                     api: {
-                        src: ['src/**/*.js', '!src/**/*.spec.js', 'src/**/*.ngdoc'],
+                        src: ['src/**/*.js', '!src/**/*.spec.js', 'src/**/*.ngdoc', 'docs/contents/api/*.ngdoc'],
                         title: 'API',
                         icon: 'puzzle-piece',
                         priority: 3
