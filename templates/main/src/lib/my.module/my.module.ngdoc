@@ -13,16 +13,3 @@ angular.module('app', ['my-module'])
     myServiceProvider.configure(....);
 }])
 </pre>
-
-You can also use the awesome {@link <%= config['angular.module'] %>.directive:myDivision directive}.
-
-<pre>
-<div my-division="number"></div>
-</pre>
-
-This module also provides an awesome {@link <%= config['angular.module'] %>.filter:myDivide filter}.
-
-<pre>
-<div>{{number | my-divide</div>
-</pre>
-

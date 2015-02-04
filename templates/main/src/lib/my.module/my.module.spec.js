@@ -11,15 +11,15 @@ describe('<%= config['angular.module'] %>', function () {
             myServiceProvider = _myServiceProvider_;
         }));
 
-        it('should store the "divisor" configuration property.', inject(function (myService) {
+        it('should store a configuration property.', inject(function (myService) {
 
-            var divisor = 5;
+            var someProperty = 5;
 
             myServiceProvider.configure({
-                divisor: divisor
+                someProperty: someProperty
             });
 
-            expect(myService.divisor).toBe(divisor);
+            expect(myService.someProperty).toBe(someProperty);
         }));
 
     });
@@ -34,54 +34,13 @@ describe('<%= config['angular.module'] %>', function () {
             });
         });
 
-        describe('default state', function () {
+        describe('someMethod()', function () {
 
-            it('should initialise with known defaults.', inject(function (myService)  {
+            it('should return true.', inject(function (myService)  {
 
-                expect(myService.divisor).toEqual(2);
-                expect(myService.rounding).toEqual(false);
+                expect(myService.someMethod()).toEqual(true);
             }));
 
-        });
-
-        describe('setName()', function () {
-
-            it('should set/get the rounding.', inject(function (myService)  {
-
-                var rounding = true;
-
-                myService.rounding = rounding;
-
-                expect(myService.rounding).toEqual(rounding);
-            }));
-        });
-
-        describe('divide', function () {
-
-            it('should return the raw quocient.', inject(function (myService)  {
-
-                var divisor = 2;
-                var dividend = 11;
-
-                myServiceProvider.configure({
-                    divisor: divisor
-                });
-
-                expect(myService.divide(dividend)).toEqual(dividend / divisor);
-            }));
-
-            it('should return the rounded quocient.', inject(function (myService)  {
-
-                var divisor = 2;
-                var dividend = 11;
-
-                myServiceProvider.configure({
-                    divisor: divisor
-                });
-                myService.rounding = true;
-
-                expect(myService.divide(dividend)).toEqual(Math.round(dividend / divisor));
-            }));
         });
     });
 });

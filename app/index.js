@@ -414,6 +414,8 @@ module.exports = yeoman.generators.Base.extend({
       series.push(makeAsyncInput('angular.module'));
       series.push(makeAsyncInput('has.tpl'));
       series.push(makeAsyncInput('has.css'));
+      series.push(makeAsyncInput('has.less'));
+      series.push(makeAsyncInput('has.sass'));
       series.push(makeAsyncInput('has.docs'));
 
       series.push(makeAsyncInput('use.git'));
@@ -596,8 +598,6 @@ module.exports = yeoman.generators.Base.extend({
       function writeModuleFile(source, destination) {
         var body;
 
-        console.log(source, destination);
-
         if (!generator.fs.exists(destination)) {
           body = generator.engine(generator.read(source), data);
           generator.fs.write(destination, body);
@@ -630,7 +630,8 @@ module.exports = yeoman.generators.Base.extend({
         if (generator.config.get('has.less')) {
           destination = path.join('src/less/', moduleName + '.less');
           writeModuleFile('main/src/less/my.module.less', destination);
-          writeModuleFile('main/src/less/components/my.directive.less', 'src/less/components/my.directive.less');
+          destination = path.join('src/lib', moduleName, moduleName + '.less');
+          writeModuleFile('main/src/lib/my.module/my.directive.less', destination);
         }
 
         if (generator.config.get('has.sass')) {
