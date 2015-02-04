@@ -1,6 +1,10 @@
-# generator-nglib [![Build Status](https://secure.travis-ci.org/cork-labs/generator-nglib.png?branch=master)](https://travis-ci.org/cork-labs/generator-nglib)
+# generator-nglib
+
+[![Build Status: Linux](http://img.shields.io/travis/cork-labs/generator-nglib/master.svg?style=flat-square)](https://travis-ci.org/cork-labs/generator-nglib)
+[![NPM version](http://img.shields.io/npm/v/generator-nglib.svg?style=flat-square)](https://npmjs.org/package/generator-nglib)
 
 > [Yeoman](http://yeoman.io) generator. Generates a project to develop Angular libraries, based on [boilerplate-nglib](https://github.com/cork-labs/boilerplate-nglib).
+
 
 [![Angular](assets/angular.png)](https://angularjs.org) [![Yeoman](assets/yeoman.png)](http://yeoman.io/)
 
