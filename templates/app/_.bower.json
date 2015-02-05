@@ -17,6 +17,7 @@
     ".jsbeautifyrc",
     ".jshintrc",
     ".travis.yml",
+    ".yo-rc.json",
     "Gruntfile.js",
     "TODO.md",
     "bootstrap.sh",
