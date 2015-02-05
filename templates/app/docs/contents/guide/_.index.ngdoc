@@ -4,17 +4,36 @@
 
 # <%= config['project.name'] %>
 
-[![Build Status: Linux](http://img.shields.io/travis/<%= config['travis.id'] %>/master.svg?style=flat-square)](https://travis-ci.org/<%= config['travis.id'] %>)
+<% if (config['use.travis']) { %>[![Build Status: Linux](http://img.shields.io/travis/<%= config['travis.id'] %>/master.svg?style=flat-square)](https://travis-ci.org/<%= config['travis.id'] %>)
+<% } %>[![Bower version](http://img.shields.io/bower/v/<%= config['bower.id'] %>.svg?style=flat-square)](<%= config['repo.url'] %>)
 
 > <%= config['project.description'] %>
 
+
 ## Getting Started
+
+Add **<%= config['project.name'] %>** to you project.
+
+<% if (config['bower.id']) { %>Via bower:
 
 ```
 $ bower install --save <%= config['bower.id'] %>
 ```
+<% } %><% if (config['npm.id']) { %>
+Via npm:
 
-## Contributing
+```
+$ npm install --save <%= config['npm.id'] %>
+```
+<% } %>
+
+Include the following JS/CSS/assets in your build:
+-
+-
+-
+
+
+## Developing
 
 Clone this repository, install the dependencies and simply run `grunt develop`.
 

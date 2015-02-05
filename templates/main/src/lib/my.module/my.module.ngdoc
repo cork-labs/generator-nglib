@@ -2,13 +2,13 @@
 @name <%= config['angular.module'] %>
 @description
 
-Provides a configurable service that divides numbers by X, as well as a directive and a filter.
+<%= config['project.description'] %>
 
-Configure this awesome {@link <%= config['angular.module'] %>.myService service} by invoking `configure()` on the {@link <%= config['angular.module'] %>.myServiceProvider provider}
+Configure the {@link <%= config['angular.module'] %>.myService service} by invoking `configure()` on the {@link <%= config['angular.module'] %>.myServiceProvider provider}
 during the config phase of your app.
 
 <pre>
-angular.module('app', ['my-module'])
+angular.module('app', ['<%= config['angular.module'] %>'])
 .config(['myServiceProvider', function (myServiceProvider) {
     myServiceProvider.configure(....);
 }])
