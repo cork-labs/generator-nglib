@@ -1,6 +1,6 @@
 {
   "name": "generator-nglib",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Generates a project to develop Angular libraries, based on boilerplate-nglib.",
   "author": {
     "name": "Cork Labs",
