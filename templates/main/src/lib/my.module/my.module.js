@@ -12,12 +12,12 @@
      */
     module.provider('myService', [
 
-        function () {
+        function myServiceProvider() {
 
             /**
              * @type {Object} provider configuration.
              */
-            var myConfig = {};
+            var serviceConfig = {};
 
             /**
              * @ngdoc function
@@ -31,7 +31,7 @@
              * - someProperty {number}
              */
             this.configure = function (config) {
-                angular.extend(myConfig, config);
+                angular.extend(serviceConfig, config);
             };
 
             /**
@@ -45,9 +45,9 @@
              */
             this.$get = [
                 '$q',
-                function ($q) {
+                function myService($q) {
 
-                    var api = {
+                    var serviceApi = {
 
                         /**
                          * @ngdoc function
@@ -65,13 +65,13 @@
                         }
                     };
 
-                    Object.defineProperty(api, 'someProperty', {
+                    Object.defineProperty(serviceApi, 'someProperty', {
                         get: function () {
-                            return myConfig.someProperty;
+                            return serviceConfig.someProperty;
                         }
                     });
 
-                    return api;
+                    return serviceApi;
                 }
             ];
         }

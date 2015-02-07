@@ -664,7 +664,7 @@ module.exports = yeoman.generators.Base.extend({
 
       if (!generator.options['skip-install'] && !fs.existsSync('.git')) {
         generator.spawnCommand('git', ['init']);
-        generator.spawnCommand('git', ['remote','add','origin',generator.config.get('repo.url')]);
+        generator.spawnCommand('git', ['remote', 'add', 'origin', generator.config.get('repo.url')]);
       }
     }
   }
