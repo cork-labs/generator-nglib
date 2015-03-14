@@ -9,7 +9,7 @@ module.exports = function (grunt) {
 
                 __groups: ['build_prepare'],
                 src: [
-                    '<%= paths.coverage %>'
+                    '<%= paths.build %>/<%= paths.coverage %>'
                 ]
             }
         },
